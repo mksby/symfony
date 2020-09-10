@@ -2,9 +2,11 @@
 // src/Controller/CatalogController.php
 namespace App\Controller;
 
-use App\Entity\Task;
+use App\Entity\Search;
 use App\Entity\Brand;
-use App\Form\Type\TaskType;
+use App\Entity\Model;
+use App\Entity\Engine;
+use App\Form\Type\SearchType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,32 +19,23 @@ class CatalogController extends AbstractController
     */
     public function index(Request $request): Response
     {
-        // $entityManager = $this->getDoctrine()->getManager();
-        // $product = new Brand();
-        // $product->setName('Test' . rand(0, 1000));
-        // $entityManager->persist($product);
-        // $entityManager->flush();
-
         $brands = $this->getDoctrine()->getRepository(Brand::class)->findAll();
+        $models = $this->getDoctrine()->getRepository(Model::class)->findAll();
+        $engines = $this->getDoctrine()->getRepository(Engine::class)->findAll();
 
-        $task = new Task();
-        // $task->setTask('Write a blog post');
-        // $task->setDueDate(new \DateTime('tomorrow'));
-        $task->setBrands($brands);
+        $search = new Search();
 
-        $form = $this->createForm(TaskType::class, $task, [
-            'brands' => $brands
+        $form = $this->createForm(SearchType::class, $search, [
+            'brands' => $brands,
+            'models' => $models,
+            'engines' => $engines
         ]);
+
+        // dump($form->createView());
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $task = $form->getData();
-
-            // $entityManager = $this->getDoctrine()->getManager();
-            // $entityManager->persist($task);
-            // $entityManager->flush();
-
-            // return $this->redirectToRoute('/');
+            $search = $form->getData();
         }
 
         return $this->render('catalog/index.html.twig', [
