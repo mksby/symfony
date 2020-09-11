@@ -23,6 +23,7 @@ use Symfony\Component\Form\FormInterface;
 class SearchType extends AbstractType
 {
     private EntityManagerInterface $em;
+    private $options;
 
     public function __construct(EntityManagerInterface $em)
     {
@@ -30,11 +31,13 @@ class SearchType extends AbstractType
     }
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $this->options = $options;
+
         $builder->addEventListener(FormEvents::PRE_SET_DATA, array($this, 'onPreSetData'));
         $builder->addEventListener(FormEvents::PRE_SUBMIT, array($this, 'onPreSubmit'));
     }
 
-    protected function addElements(FormInterface $form, Brand $brand = null, Model $model = null)
+    protected function addElements(FormInterface $form, Brand $brand = null, Model $model = null, Engine $engine = null)
     {
         $form
             ->add('brand', EntityType::class, [
@@ -76,8 +79,8 @@ class SearchType extends AbstractType
                 'required' => false,
                 'placeholder' => 'Выберите двигатель',
                 'choice_label' => fn($model) => $model->getName(),
-                'class' => Engine::class
-//                'data' => $options['selected_engine']
+                'class' => Engine::class,
+                'data' => $engine
             ])
             ->add('Find', SubmitType::class);
     }
@@ -88,25 +91,28 @@ class SearchType extends AbstractType
 
         $brand = $this->em->getRepository(Brand::class)->findOneBy(['id' => $model['brand']]);
         $model = $this->em->getRepository(Model::class)->findOneBy(['id' => $model['model']]);
+        $engine = $this->em->getRepository(Engine::class)->findOneBy(['id' => $this->options['engine']]);
 
-
-        $this->addElements($form, $brand, $model);
+        $this->addElements($form, $brand, $model, $engine);
     }
 
     function onPreSetData(FormEvent $event) {
          $form = $event->getForm();
-         $model = $event->getData();
 
-         $brand = $model->getBrand() ? $model->getBrand() : null;
-         $model = $model->getModel() ? $model->getModel() : null;
+         $brand = $this->em->getRepository(Brand::class)->findOneBy(['name' => $this->options['brand']]);
+         $model = $this->em->getRepository(Model::class)->findOneBy(['name' => $this->options['model']]);
+         $engine = $this->em->getRepository(Engine::class)->findOneBy(['name' => $this->options['engine']]);
 
-         $this->addElements($form, $brand, $model);
+         $this->addElements($form, $brand, $model, $engine);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Search::class
+            'data_class' => Search::class,
+            'brand' => null,
+            'model' => null,
+            'engine' => null
         ]);
     }
 }

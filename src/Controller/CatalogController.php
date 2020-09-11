@@ -31,7 +31,7 @@ class CatalogController extends AbstractController
 
             return $this->redirectToRoute('catalog_brands_models', [
                 'brand' => $search->getBrand()->getName(),
-                'model' => $search->getModel()->getName(),
+                'model' => $search->getModel() ? $search->getModel()->getName() : null,
                 'engine' => $search->getEngine() ? $search->getEngine()->getName() : null
             ]);
         }
@@ -44,7 +44,7 @@ class CatalogController extends AbstractController
     }
 
     /**
-     * @Route("/catalog/{brand}/{model}", name="catalog_brands_models", methods={"GET", "POST"})
+     * @Route("/catalog/{brand}/{model}", defaults={"model"=null}, name="catalog_brands_models", methods={"GET", "POST"})
      * @return Response
     */
     public function findModelsOfBrands(Request $request, $brand, $model): Response
@@ -57,7 +57,11 @@ class CatalogController extends AbstractController
 
         $search = new Search();
 
-        $form = $this->createForm(SearchType::class, $search);
+        $form = $this->createForm(SearchType::class, $search, [
+            'brand' => $brand,
+            'model' => $model,
+            'engine' => $request->query->get('engine')
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -65,7 +69,7 @@ class CatalogController extends AbstractController
 
             return $this->redirectToRoute('catalog_brands_models', [
                 'brand' => $search->getBrand()->getName(),
-                'model' => $search->getModel()->getName(),
+                'model' => $search->getModel() ? $search->getModel()->getName() : null,
                 'engine' => $search->getEngine() ? $search->getEngine()->getName() : null
             ]);
         }
