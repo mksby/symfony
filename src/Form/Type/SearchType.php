@@ -48,7 +48,7 @@ class SearchType extends AbstractType
                 'data' => $brand,
                 'class' => Brand::class,
                 'attr' => [
-                    'data-url-models' => '/catalog/models'
+                    'data-url-models' => '/api/catalog/models'
                 ]
             ]);
 
@@ -66,12 +66,12 @@ class SearchType extends AbstractType
         $form->add('model', EntityType::class, [
                 'label' => 'Модели',
                 'required' => false,
-                'placeholder' => 'Выберите модель',
+                'placeholder' => 'Выберите модель' . (empty($models) ? '' : ' ' . $brand->getName() . ' ...'),
                 'class' => Model::class,
                 'choices' => $models,
                 'choice_label' => fn($model) => $model->getName(),
                 'data' => $model,
-//                'disabled' => true
+                'disabled' => empty($models)
         ]);
 
         $form->add('engine', EntityType::class, [

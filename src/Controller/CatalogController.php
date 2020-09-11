@@ -44,10 +44,10 @@ class CatalogController extends AbstractController
     }
 
     /**
-     * @Route("/catalog/{brand}/{model}", defaults={"model"=null}, name="catalog_brands_models", methods={"GET", "POST"})
+     * @Route("/catalog/{brand}/{model}", name="catalog_brands_models", methods={"GET", "POST"})
      * @return Response
     */
-    public function findModelsOfBrands(Request $request, $brand, $model): Response
+    public function findModelsOfBrands(Request $request, $brand, $model = null): Response
     {
         $brandReposity = $this->getDoctrine()->getRepository(Brand::class);
         $modelReposity = $this->getDoctrine()->getRepository(Model::class);
@@ -82,7 +82,7 @@ class CatalogController extends AbstractController
     }
 
     /**
-     * @Route("/catalog/models", name="catalog_models", methods={"GET"})
+     * @Route("/api/catalog/models", name="catalog_models", methods={"GET"})
      * @param Request $request
      * @return JsonResponse
      */
@@ -97,14 +97,14 @@ class CatalogController extends AbstractController
             ->getQuery()
             ->getResult();
 
-        $responseArray = [];
+        $response = [];
         foreach($models as $model) {
-            $responseArray[] = [
+            $response[] = [
                 "id" => $model->getId(),
                 "name" => $model->getName()
             ];
         }
 
-        return new JsonResponse($responseArray);
+        return new JsonResponse($response);
     }
 }
