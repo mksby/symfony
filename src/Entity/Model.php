@@ -22,6 +22,27 @@ class Model
      */
     private $name;
 
+    /**
+     * @return mixed
+     */
+    public function getBrandId()
+    {
+        return $this->brand_id;
+    }
+
+    /**
+     * @param mixed $brand_id
+     */
+    public function setBrandId($brand_id): void
+    {
+        $this->brand_id = $brand_id;
+    }
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $brand_id;
+
     public function getId(): ?int
     {
         return $this->id;

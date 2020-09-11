@@ -7,6 +7,7 @@ use App\Entity\Brand;
 use App\Entity\Model;
 use App\Entity\Engine;
 use App\Form\Type\SearchType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,20 +17,13 @@ class CatalogController extends AbstractController
 {
     /**
      * @Route("/catalog", methods={"GET", "POST"})
+     * @return Response
     */
     public function index(Request $request): Response
     {
-        $brands = $this->getDoctrine()->getRepository(Brand::class)->findAll();
-        $models = $this->getDoctrine()->getRepository(Model::class)->findAll();
-        $engines = $this->getDoctrine()->getRepository(Engine::class)->findAll();
-
         $search = new Search();
 
-        $form = $this->createForm(SearchType::class, $search, [
-            'brand' => $brands,
-            'model' => $models,
-            'engine' => $engines
-        ]);
+        $form = $this->createForm(SearchType::class, $search);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -51,27 +45,19 @@ class CatalogController extends AbstractController
 
     /**
      * @Route("/catalog/{brand}/{model}", name="catalog_brands_models", methods={"GET", "POST"})
+     * @return Response
     */
-    public function findBrands(Request $request, $brand, $model): Response
+    public function findModelsOfBrands(Request $request, $brand, $model): Response
     {
         $brandReposity = $this->getDoctrine()->getRepository(Brand::class);
         $modelReposity = $this->getDoctrine()->getRepository(Model::class);
-        $engineReposity = $this->getDoctrine()->getRepository(Engine::class);
 
         $selectedBrand = $brandReposity->findOneBy(['name' => $brand]);
         $selectedModel = $modelReposity->findOneBy(['name' => $model]);
-        $selectedEngine = $request->query->all() ? $engineReposity->findOneBy(['name' => $request->query->all()['engine']]) : null;
 
         $search = new Search();
 
-        $form = $this->createForm(SearchType::class, $search, [
-            'brand' => $brandReposity->findAll(),
-            'model' => $modelReposity->findAll(),
-            'engine' => $engineReposity->findAll(),
-            'selected_brand' => $selectedBrand,
-            'selected_model' => $selectedModel,
-            'selected_engine' => $selectedEngine
-        ]);
+        $form = $this->createForm(SearchType::class, $search);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -89,5 +75,32 @@ class CatalogController extends AbstractController
             'brand' => $selectedBrand,
             'model' => $selectedModel
         ]);
+    }
+
+    /**
+     * @Route("/catalog/models", name="catalog_models", methods={"GET"})
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function findModelsOfBrand(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $modelRepository = $em->getRepository(Model::class);
+
+        $models = $modelRepository->createQueryBuilder("q")
+            ->where("q.brand_id = :brand_id")
+            ->setParameter("brand_id", $request->query->get("brand_id"))
+            ->getQuery()
+            ->getResult();
+
+        $responseArray = [];
+        foreach($models as $model) {
+            $responseArray[] = [
+                "id" => $model->getId(),
+                "name" => $model->getName()
+            ];
+        }
+
+        return new JsonResponse($responseArray);
     }
 }
