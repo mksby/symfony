@@ -7,48 +7,39 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Search
 {
 
-    /**
-     * @Assert\NotBlank
-     */
-    private $brands;
+    private $brand;
 
-    /**
-     * @Assert\NotBlank
-     */
-    private $models;
+    private $model;
 
-    /**
-     * @Assert\NotBlank
-     */
-    private $engines;
+    private $engine;
 
-    public function getBrands()
+    public function getBrand()
     {
-        return $this->brands;
+        return $this->brand;
     }
 
-    public function setBrands($brands)
+    public function setBrand($brand)
     {
-        $this->brands = $brands;
+        $this->brand = $brand;
     }
 
-    public function getEngines()
+    public function getEngine()
     {
-        return $this->engines;
+        return $this->engine;
     }
 
-    public function setEngines($engines)
+    public function setEngine($engine)
     {
-        $this->engines = $engines;
+        $this->engine = $engine;
     }
 
-    public function getModels()
+    public function getModel()
     {
-        return $this->models;
+        return $this->model;
     }
 
-    public function setModels($models)
+    public function setModel($model)
     {
-        $this->models = $models;
+        $this->model = $model;
     }
 }

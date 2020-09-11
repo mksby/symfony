@@ -11,30 +11,38 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormInterface;
 
 class SearchType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('brands', ChoiceType::class, [
+            ->add('brand', ChoiceType::class, [
                 'label' => 'Марки',
                 'required' => false,
                 'placeholder' => 'Выберите марку',
-                'choices' => $options['brands'],
-                'choice_label' => fn($model) => $model->getName()
+                'choices' => $options['brand'],
+                'choice_label' => fn($model) => $model->getName(),
+                'data' => $options['selected_brand']
             ])
-            ->add('models', ChoiceType::class, [
+            ->add('model', ChoiceType::class, [
                 'label' => 'Модели',
+                'required' => false,
                 'placeholder' => 'Выберите модель',
-                'choices' => $options['models'],
-                'choice_label' => fn($model) => $model->getName()
+                'choices' => $options['model'],
+                'choice_label' => fn($model) => $model->getName(),
+                'data' => $options['selected_model']
             ])
-            ->add('engines', ChoiceType::class, [
+            ->add('engine', ChoiceType::class, [
                 'label' => 'Двигатели',
+                'required' => false,
                 'placeholder' => 'Выберите двигатель',
-                'choices' => $options['engines'],
-                'choice_label' => fn($model) => $model->getName()
+                'choices' => $options['engine'],
+                'choice_label' => fn($model) => $model->getName(),
+                'data' => $options['selected_engine']
             ])
             ->add('Find', SubmitType::class);
     }
@@ -43,9 +51,12 @@ class SearchType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Search::class,
-            'brands' => null,
-            'models' => null,
-            'engines' => null
+            'brand' => null,
+            'model' => null,
+            'engine' => null,
+            'selected_brand' => null,
+            'selected_model' => null,
+            'selected_engine' => null
         ]);
     }
 }
