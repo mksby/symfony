@@ -86,6 +86,7 @@ class SearchType extends AbstractType
     }
 
     function onPreSubmit(FormEvent $event) {
+        dump('onPreSubmit');
         $form = $event->getForm();
         $model = $event->getData();
 
@@ -97,6 +98,7 @@ class SearchType extends AbstractType
     }
 
     function onPreSetData(FormEvent $event) {
+         dump('onPreSetData');
          $form = $event->getForm();
 
          $brand = $this->em->getRepository(Brand::class)->findOneBy(['name' => $this->options['brand']]);
