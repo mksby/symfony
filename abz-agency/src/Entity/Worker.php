@@ -33,11 +33,6 @@ class Worker
     private $last_name;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $position;
-
-    /**
      * @ORM\Column(type="datetime")
      */
     private $start_date;
@@ -46,6 +41,11 @@ class Worker
      * @ORM\Column(type="integer")
      */
     private $salary;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $manager;
 
     public function getId(): ?int
     {
@@ -88,18 +88,6 @@ class Worker
         return $this;
     }
 
-    public function getPosition(): ?int
-    {
-        return $this->position;
-    }
-
-    public function setPosition(int $position): self
-    {
-        $this->position = $position;
-
-        return $this;
-    }
-
     public function getStartDate(): ?\DateTimeInterface
     {
         return $this->start_date;
@@ -120,6 +108,18 @@ class Worker
     public function setSalary(int $salary): self
     {
         $this->salary = $salary;
+
+        return $this;
+    }
+
+    public function getManager(): ?int
+    {
+        return $this->manager;
+    }
+
+    public function setManager(int $manager): self
+    {
+        $this->manager = $manager;
 
         return $this;
     }
